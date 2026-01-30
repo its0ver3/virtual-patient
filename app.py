@@ -153,6 +153,8 @@ def init_session_state():
         st.session_state.pending_response = False
     if "confirm_leave_interview" not in st.session_state:
         st.session_state.confirm_leave_interview = False
+    if "api_error" not in st.session_state:
+        st.session_state.api_error = None
 
 
 def get_client():
@@ -174,9 +176,10 @@ def get_patient_response(messages):
             system=get_system_prompt(),
             messages=messages
         )
+        st.session_state.api_error = None
         return response.content[0].text
     except Exception as e:
-        st.error(f"Error communicating with AI: {str(e)}")
+        st.session_state.api_error = f"Error communicating with AI: {str(e)}"
         return None
 
 
@@ -411,6 +414,10 @@ def show_interview():
         with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(f"**{role_label}:** {msg['content']}")
 
+    # Show any API error from previous attempt
+    if st.session_state.api_error:
+        st.error(st.session_state.api_error)
+
     # Show pending user message and generate response
     if st.session_state.pending_response:
         # Show patient thinking indicator
@@ -424,6 +431,7 @@ def show_interview():
 
     # Chat input
     if prompt := st.chat_input("Type your question..."):
+        st.session_state.api_error = None
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state.pending_response = True
         st.rerun()

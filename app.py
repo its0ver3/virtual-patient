@@ -171,7 +171,7 @@ def get_patient_response(messages):
     try:
         client = get_client()
         response = client.messages.create(
-            model="claude-sonnet-4-5-20250929",
+            model="claude-opus-4-5-20251101",
             max_tokens=1024,
             system=get_system_prompt(),
             messages=messages
@@ -244,7 +244,7 @@ ONGOING PLAN:
 """
 
         response = client.messages.create(
-            model="claude-sonnet-4-5-20250929",
+            model="claude-opus-4-5-20251101",
             max_tokens=1000,
             system=FEEDBACK_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": eval_data}]
